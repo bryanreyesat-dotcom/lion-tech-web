@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
 
-// IMPORTANTE: Asegúrate de que estas líneas estén aquí abajo
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Hero from './components/Hero';
@@ -16,28 +15,49 @@ function App() {
   const [view, setView] = useState('hero');
 
   useEffect(() => {
-    // Escuchar cambios en la sesión (Login/Logout)
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    supabase.auth.onAuthStateChange((_event, session) => setSession(session));
+    // 1. Obtener sesión inicial
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    // 2. Escuchar cambios de sesión
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      
+      // MEJORA: Si acaba de iniciar sesión con éxito, mándalo al Admin automáticamente
+      if (_event === 'SIGNED_IN') {
+        setView('admin');
+      }
+      
+      // Si cierra sesión, mándalo al Hero
+      if (_event === 'SIGNED_OUT') {
+        setView('hero');
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   return (
     <div className="min-h-screen bg-lion-black">
+      {/* Navbar con control de vista */}
       <Navbar setView={setView} />
       
       <main>
-        {/* Si la vista es admin, chequeamos sesión */}
-        {view === 'admin' ? (
+        {/* Lógica de Administración */}
+        {view === 'admin' && (
           !session ? <Login setView={setView} /> : <Admin />
-        ) : (
-          <>
-            {view === 'hero' && <Hero setView={setView} />}
-            {view === 'catalog' && <Catalog setView={setView} />}
-            {/* ... otras vistas */}
-          </>
         )}
+
+        {/* Vistas Públicas */}
+        {view === 'hero' && <Hero setView={setView} />}
+        {view === 'catalog' && <Catalog setView={setView} />}
+        {view === 'about' && <About />}
+        {view === 'contact' && <Contact />}
       </main>
-<Footer setView={setView} />
+
+      {/* Footer con control de vista */}
+      <Footer setView={setView} />
     </div>
   );
 }
