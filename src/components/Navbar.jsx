@@ -18,15 +18,15 @@ const Navbar = ({ setView }) => {
   return (
     <nav className="fixed top-0 w-full z-[100] bg-lion-black/95 backdrop-blur-md border-b border-lion-petroleo/30 px-6 py-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        
+
         {/* --- SECCIÓN 1: LOGO (IZQUIERDA) --- */}
-        <div 
+        <div
           className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => handleNavigation('hero')}
         >
-          <img 
-            src={logo} 
-            alt="Lion Tech Logo" 
+          <img
+            src={logo}
+            alt="Lion Tech Logo"
             className="h-10 w-10 md:h-12 md:w-12 rounded-lg border border-lion-cyan shadow-[0_0_15px_rgba(66,234,237,0.2)]"
           />
         </div>
@@ -40,30 +40,37 @@ const Navbar = ({ setView }) => {
 
         {/* --- SECCIÓN 3: NAVEGACIÓN (DERECHA) --- */}
         <div className="flex items-center">
-          
+
           {/* LINKS ESCRITORIO */}
           <div className="hidden md:flex gap-8 items-center">
-            <button 
+            {/* BOTÓN INICIO AÑADIDO */}
+            <button
+              onClick={() => handleNavigation('hero')}
+              className="font-montserrat text-[10px] font-bold text-white hover:text-lion-cyan transition-all tracking-[0.2em]"
+            >
+              INICIO
+            </button>
+            <button
               onClick={() => handleNavigation('catalog')}
               className="font-montserrat text-[10px] font-bold text-white hover:text-lion-cyan transition-all tracking-[0.2em]"
             >
               CATÁLOGO
             </button>
-            <button 
+            <button
               onClick={() => handleNavigation('about')}
               className="font-montserrat text-[10px] font-bold text-white hover:text-lion-cyan transition-all tracking-[0.2em]"
             >
               NOSOTROS
             </button>
-            <button 
+            <button
               onClick={() => handleNavigation('contact')}
               className="font-montserrat text-[10px] font-bold text-white hover:text-lion-cyan transition-all tracking-[0.2em]"
             >
               CONTACTO
             </button>
 
-            {/* BOTÓN SECRETO ADMIN: Un simple punto que casi no se ve */}
-            <button 
+            {/* BOTÓN SECRETO ADMIN */}
+            <button
               onClick={() => handleNavigation('admin')}
               className="text-[10px] text-gray-900 hover:text-lion-cyan transition-colors ml-2"
               title="Admin Access"
@@ -73,7 +80,7 @@ const Navbar = ({ setView }) => {
           </div>
 
           {/* BOTÓN HAMBURGUESA: Solo visible en móviles */}
-          <button 
+          <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden text-lion-cyan p-2 focus:outline-none"
             aria-label="Menu"
@@ -98,26 +105,32 @@ const Navbar = ({ setView }) => {
         py-12 gap-8 border-b border-lion-petroleo/50 
         animate-in fade-in slide-in-from-top-2
       `}>
-        <button 
+        {/* INICIO EN MÓVIL */}
+        <button
+          onClick={() => handleNavigation('hero')}
+          className="font-montserrat text-lg font-bold text-white hover:text-lion-cyan tracking-widest"
+        >
+          INICIO
+        </button>
+        <button
           onClick={() => handleNavigation('catalog')}
           className="font-montserrat text-lg font-bold text-white hover:text-lion-cyan tracking-widest"
         >
           CATÁLOGO
         </button>
-        <button 
+        <button
           onClick={() => handleNavigation('about')}
           className="font-montserrat text-lg font-bold text-white hover:text-lion-cyan tracking-widest"
         >
           NOSOTROS
         </button>
-        <button 
+        <button
           onClick={() => handleNavigation('contact')}
           className="font-montserrat text-lg font-bold text-white hover:text-lion-cyan tracking-widest"
         >
           CONTACTO
         </button>
-        {/* En móvil el punto es más difícil de clickear, podrías ponerlo aquí también */}
-        <button 
+        <button
           onClick={() => handleNavigation('admin')}
           className="text-gray-900 text-xs"
         >
