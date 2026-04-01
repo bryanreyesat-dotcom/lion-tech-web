@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
 
+// Tus otros imports...
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Hero from './components/Hero';
@@ -9,54 +10,49 @@ import Contact from './components/Contact';
 import Catalog from './components/Catalog';
 import Admin from './components/Admin';
 import Login from './components/Login';
+import ProductModal from './components/ProductModal'; // 1. Importa el modal
 
 function App() {
   const [session, setSession] = useState(null);
   const [view, setView] = useState('hero');
+  const [selectedProduct, setSelectedProduct] = useState(null); // 2. Estado para el producto seleccionado
 
   useEffect(() => {
-    // 1. Obtener sesión inicial
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
 
-    // 2. Escuchar cambios de sesión
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      
-      // MEJORA: Si acaba de iniciar sesión con éxito, mándalo al Admin automáticamente
-      if (_event === 'SIGNED_IN') {
-        setView('admin');
-      }
-      
-      // Si cierra sesión, mándalo al Hero
-      if (_event === 'SIGNED_OUT') {
-        setView('hero');
-      }
+      if (_event === 'SIGNED_IN') setView('admin');
+      if (_event === 'SIGNED_OUT') setView('hero');
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   return (
-    <div className="min-h-screen bg-lion-black">
-      {/* Navbar con control de vista */}
+    <div className="min-h-screen bg-lion-black text-white">
       <Navbar setView={setView} />
-      
+
       <main>
-        {/* Lógica de Administración */}
         {view === 'admin' && (
           !session ? <Login setView={setView} /> : <Admin />
         )}
 
-        {/* Vistas Públicas */}
+        {/* 3. Pasamos setSelectedProduct al catálogo */}
         {view === 'hero' && <Hero setView={setView} />}
-        {view === 'catalog' && <Catalog setView={setView} />}
+        {view === 'catalog' && <Catalog setView={setView} onProductClick={setSelectedProduct} />}
         {view === 'about' && <About />}
         {view === 'contact' && <Contact />}
       </main>
 
-      {/* Footer con control de vista */}
+      {/* 4. Renderizamos el modal si hay un producto seleccionado */}
+      <ProductModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
+
       <Footer setView={setView} />
     </div>
   );

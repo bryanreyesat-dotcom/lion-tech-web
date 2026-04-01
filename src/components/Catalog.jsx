@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import logo from '../assets/logo.jpeg';
 
-// 1. Agregamos { setView } para poder salir
-const Catalog = ({ setView }) => {
+const Catalog = ({ setView, onProductClick }) => {
   const [productos, setProductos] = useState([]);
+  const [imgExpandida, setImgExpandida] = useState(null); // Para el visor de imagen
 
-  const WHATSAPP_NUMBER = "573001660702"; 
+  const WHATSAPP_NUMBER = "573159309346";
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -17,56 +18,84 @@ const Catalog = ({ setView }) => {
   }, []);
 
   return (
-    <section className="min-h-screen pt-24 pb-12 px-6 bg-lion-black">
+    <section className="min-h-screen pt-24 pb-12 px-6 bg-lion-black relative">
+
+      {/* --- VISOR DE IMAGEN (LIGHTBOX) --- */}
+      {imgExpandida && (
+        <div
+          className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 cursor-zoom-out animate-in fade-in duration-300"
+          onClick={() => setImgExpandida(null)}
+        >
+          <button className="absolute top-8 right-8 text-white/50 hover:text-white text-4xl transition-colors">✕</button>
+          <img
+            src={imgExpandida}
+            className="max-w-full max-h-[90vh] object-contain shadow-[0_0_50px_rgba(66,234,237,0.2)] animate-in zoom-in duration-500"
+            alt="Producto ampliado"
+          />
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto">
-        
-        {/* --- NUEVO BOTÓN DE SALIR --- */}
+        {/* --- BOTÓN DE SALIR --- */}
         <div className="flex justify-between items-center mb-10">
-          <button 
-            onClick={() => setView('hero')} 
+          <button
+            onClick={() => setView('hero')}
             className="flex items-center gap-2 text-lion-cyan text-[10px] font-bold tracking-[0.2em] hover:opacity-70 transition-all border border-lion-cyan/30 px-4 py-2 rounded-full"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
             VOLVER AL INICIO
           </button>
-          
-          <h2 className="text-white/30 text-[10px] font-bold tracking-[0.5em] uppercase hidden md:block">
-            Exclusividad Lion Tech
-          </h2>
+          <h2 className="text-white/30 text-[10px] font-bold tracking-[0.5em] uppercase hidden md:block">Exclusividad Lion Tech</h2>
         </div>
 
         {/* --- GRID DE PRODUCTOS --- */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {productos.map((prod) => (
-            <div key={prod.id} className="bg-lion-dark border border-lion-petroleo/30 rounded-2xl overflow-hidden hover:border-lion-cyan transition-all flex flex-col h-full shadow-2xl">
-              <img src={prod.imagen} alt={prod.nombre} className="h-64 w-full object-cover" />
-              <div className="p-6 text-center flex flex-col flex-grow">
-                <span className="text-[10px] text-lion-cyan font-bold tracking-widest uppercase mb-1">
-                  {prod.status}
-                </span>
-                <h3 className="text-white font-playfair text-xl mt-2 flex-grow">
-                  {prod.nombre}
-                </h3>
-                
-                <p className="text-white font-bold text-2xl my-4">
-                  ${Number(prod.precio).toLocaleString('es-CO')}
-                </p>
+            <div key={prod.id} className="group relative bg-[#111] border border-gray-800 rounded-3xl p-6 transition-all duration-500 hover:border-lion-cyan flex flex-col h-full overflow-hidden">
 
-                <div className="flex gap-2">
-                   <button className="flex-1 border border-gray-700 text-white py-2 rounded-lg text-[10px] font-bold hover:bg-gray-800 transition-colors">
-                     MÁS INFO
-                   </button>
-                   
-                   <a 
-                     href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hola!%20Estoy%20interesado%20en%20el%20${encodeURIComponent(prod.nombre)}`}
-                     target="_blank"
-                     rel="noopener noreferrer"
-                     className="flex-1 bg-lion-cyan text-black py-2 rounded-lg text-[10px] font-bold text-center hover:bg-opacity-80 transition-all shadow-[0_0_10px_rgba(66,234,237,0.3)]"
-                   >
-                     LO QUIERO
-                   </a>
+              {/* 1. CONTENEDOR DE IMAGEN INTERACTIVO */}
+              <div
+                className="relative aspect-square w-full mb-6 rounded-2xl overflow-hidden bg-[#161616] border border-gray-800 flex items-center justify-center p-4 cursor-pointer group-hover:border-lion-cyan/30"
+                onClick={() => setImgExpandida(prod.imagen)} // <-- AQUÍ SE ABRE LA IMAGEN
+              >
+                {/* Overlay de "Ampliar" que aparece en Hover */}
+                <div className="absolute inset-0 bg-lion-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+                  <span className="bg-white/10 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold py-2 px-4 rounded-full tracking-widest translate-y-4 group-hover:translate-y-0 transition-transform">
+                    AMPLIAR VISTA 🔍
+                  </span>
+                </div>
+
+                <img
+                  src={prod.imagen}
+                  alt={prod.nombre}
+                  className="max-h-full w-auto object-contain transition-transform duration-700 group-hover:scale-110"
+                />
+              </div>
+
+              {/* 2. Info y Botones (Igual que antes) */}
+              <div className="flex flex-col flex-grow relative z-10">
+                <h3 className="text-white font-playfair text-xl mb-3 leading-tight group-hover:text-lion-cyan transition-colors">{prod.nombre}</h3>
+
+                <div className="flex justify-between items-end mt-auto pt-4 border-t border-gray-800">
+                  <div>
+                    <span className="text-gray-500 text-[9px] uppercase tracking-widest font-bold">Inversión Elite</span>
+                    <p className="text-white font-extrabold text-3xl tracking-tight mt-1">${Number(prod.precio).toLocaleString('es-CO')}</p>
+                  </div>
+                  <div className="w-12 h-12 border border-gray-800 rounded-xl flex items-center justify-center p-2 group-hover:border-lion-cyan group-hover:bg-lion-cyan/5 transition-all duration-500 overflow-hidden">
+                    <img
+                      src={logo}
+                      alt="Lion Tech Logo"
+                      className="w-full h-full object-contain opacity-50 group-hover:opacity-100 group-hover:drop-shadow-[0_0_8px_rgba(66,234,237,0.8)] transition-all duration-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mt-6">
+                  <button onClick={() => onProductClick(prod)} className="bg-transparent text-white border border-gray-700 py-3 rounded-xl text-[8px] font-black tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all">
+                    DETALLES +
+                  </button>
+                  <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=Interesado en ${prod.nombre}`} className="bg-lion-cyan text-black py-3 rounded-xl text-[8px] font-black tracking-[0.2em] uppercase text-center hover:bg-white transition-all">
+                    ADQUIRIR
+                  </a>
                 </div>
               </div>
             </div>
