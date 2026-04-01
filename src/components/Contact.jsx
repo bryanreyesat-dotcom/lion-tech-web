@@ -4,7 +4,7 @@ const Contact = () => {
   const WHATSAPP_NUMBER = "573159309346";
   const INSTAGRAM_USER = "liontech_accesorios";
   const TELEGRAM_USER = "573159309346";
-  const FACEBOOK_PAGE = "LIONTECHShop";
+  const FACEBOOK_PAGE = "LIONTECHSHOP";
   const EMAIL = "shopliontech621@gmail.com";
 
   const GMAIL_URL = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}&su=Consulta Lion Tech&body=Hola Lion Tech, deseo obtener más información...`;
